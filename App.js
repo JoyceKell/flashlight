@@ -1,13 +1,30 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {View, StyleSheet, Image, TouchableOpacity} from 'react-native';
+import Torch from 'react-native-torch';
+import RNShake from 'react-native-shake';
 import imagemX from './assets/eco-light.png';
 import imagemY from './assets/eco-light-off.png';
 
 const App = () => {
-  const toggle = true;
+  const [toggle, setToggle] = useState(false);
+
+  useEffect(() => {
+    Torch.switchState(toggle);
+  }, [toggle]);
+
+  useEffect(() => {
+    const subscription = RNShake.addListener(() => {
+      setToggle(oldToggle => !oldToggle);
+    });
+
+    return () => subscription.remove();
+  }, []);
+
+  const handleChangeToggle = () => setToggle(oldToggle => !oldToggle);
+
   return (
     <View style={toggle ? style.containerLight : style.container}>
-      <TouchableOpacity onPress={() => {}}>
+      <TouchableOpacity onPress={handleChangeToggle}>
         <Image
           style={toggle ? style.lightingOn : style.lightingOff}
           source={toggle ? imagemX : imagemY}
